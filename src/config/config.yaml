@@ -1,0 +1,22 @@
+cbow:
+  left_window_size: 2
+  right_window_size: 0
+model:
+  hidden_size: 2
+  embedding_dim: 32
+  hidden_dim: 16
+  num_layers: 1
+  fc_dim: 32
+training:
+  lr: 0.01
+  batch_size: 4
+  momentum: 0
+  weight_decay: 0
+  num_epochs: 5
+  saves_folder: "saves"
+data:
+  path: "data/wiki/people_wiki.csv"
+  train_size: 100
+  test_size: 10
+  vocab_size: 10000
+  unk_token: "~"
