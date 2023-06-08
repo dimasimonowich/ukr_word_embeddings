@@ -21,7 +21,7 @@ data:
   tokenizer_path: "data/processed/bruk/tokenizer.json"
   context_path: "data/processed/bruk/context.pt"
   target_path: "data/processed/bruk/target.pt"
-  train_size: 10
-  test_size: 1
+  train_size: 750
+  test_size: 56
   vocab_size: 100
   unk_token: "~"
