@@ -15,8 +15,13 @@ training:
   num_epochs: 5
   saves_folder: "saves"
 data:
-  path: "data/wiki/people_wiki.csv"
-  train_size: 100
-  test_size: 10
-  vocab_size: 10000
+  path: "data/raw/wiki/people_wiki.csv"
+  bruk_path: "data/raw/bruk"
+  stopwords: "data/stopwords/stopwords_ua.txt"
+  tokenizer_path: "data/processed/bruk/tokenizer.json"
+  context_path: "data/processed/bruk/context.pt"
+  target_path: "data/processed/bruk/target.pt"
+  train_size: 10
+  test_size: 1
+  vocab_size: 100
   unk_token: "~"

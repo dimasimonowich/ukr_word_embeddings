@@ -4,4 +4,4 @@ ruamel.yaml
 pytorch
 matplotlib
 pandas
-nltk
+stanza
