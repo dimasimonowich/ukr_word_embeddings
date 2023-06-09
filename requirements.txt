@@ -5,3 +5,4 @@ torch
 matplotlib
 pandas
 stanza
+gdown

@@ -1,5 +1,5 @@
 cbow:
-  left_window_size: 2
+  left_window_size: 4
   right_window_size: 0
 model:
   hidden_size: 2
@@ -15,13 +15,12 @@ training:
   num_epochs: 5
   saves_folder: "saves"
 data:
-  path: "data/raw/wiki/people_wiki.csv"
   bruk_path: "data/raw/bruk"
   stopwords: "data/stopwords/stopwords_ua.txt"
-  tokenizer_path: "data/processed/bruk/tokenizer.json"
-  context_path: "data/processed/bruk/context.pt"
-  target_path: "data/processed/bruk/target.pt"
-  train_size: 750
-  test_size: 56
-  vocab_size: 100
+  tokenizer_path: "data/processed/bruk_full_w4_v25000/tokenizer.json"
+  context_path: "data/processed/bruk_full_w4_v25000/context.pt"
+  target_path: "data/processed/bruk_full_w4_v25000/target.pt"
+  train_size: 1200
+  test_size: 105
+  vocab_size: 25000
   unk_token: "~"
