@@ -1,21 +1,18 @@
+import os
+
 import gdown
 import zipfile
+import shutil
 
 
 if __name__ == "__main__":
-    data_url = 'https://drive.google.com/uc?id=1_cT9dio8ldtZ917vP_rXETo3a1JfMPW3'
-    data_output_file = 'data.zip'
+    data_url = 'https://drive.google.com/drive/folders/1ols8XxXcrq6ogfkPMMbS6zx8XycgwEyR?usp=sharing'
+    data_file = 'data_and_saves/data.zip'
 
-    gdown.download(data_url, data_output_file, quiet=False)
+    gdown.download_folder(data_url, quiet=True, use_cookies=False)
 
-    with zipfile.ZipFile(data_output_file, "r") as f:
+    with zipfile.ZipFile(data_file, "r") as f:
         f.extractall(".")
 
-    # saves_url = 'https://drive.google.com/uc?id=1Lw9A78P3-zcMwTBSbLFGHbNpTvf7pPB6'
-    # saves_output_file = 'saves.zip'
-    #
-    # gdown.download(saves_url, saves_output_file, quiet=False)
-    #
-    # with zipfile.ZipFile(saves_output_file, "r") as f:
-    #     f.extractall("saves")
+    shutil.rmtree("data_and_saves")
 
