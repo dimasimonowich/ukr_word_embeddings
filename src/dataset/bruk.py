@@ -50,13 +50,19 @@ class BrukDataset(Dataset):
         cls,
         tokenizer_path=CONFIG["data"]["tokenizer_path"],
         context_path=CONFIG["data"]["context_path"],
-        target_path=CONFIG["data"]["target_path"]
+        target_path=CONFIG["data"]["target_path"],
+        filter_unk_target=True
     ):
         with open(tokenizer_path) as f:
             word_2_idx = json.load(f)
 
         context = torch.LongTensor(torch.load(context_path))
         target = torch.LongTensor(torch.load(target_path))
+
+        if filter_unk_target:
+            target_not_unk_mask = target != len(word_2_idx) - 1
+            target = target[target_not_unk_mask]
+            context = context[target_not_unk_mask]
 
         return cls(context, target, word_2_idx)
 
