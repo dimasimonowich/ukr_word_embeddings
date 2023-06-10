@@ -1,11 +1,15 @@
-from training.train import TrainingLoop
-from model.encoder_decoder import EncoderDecoder
-from dataset.bruk import BrukDataset
+from training import Pipeline
+from model import CBOWTransformer
+from dataset import BrukDataset, UberCorpusDataset
+from infographic import Infographic
+
+# dataset = BrukDataset.from_files()
+# model, train_losses, val_losses, accuracies = Pipeline(CBOWTransformer()).train(dataset)
+#
+# Infographic(model, train_losses, val_losses, accuracies).plot()
 
 
-# bruk = BrukDataset.from_files()
-# print(bruk.word_2_idx)
-bruk = BrukDataset.from_raw()
-bruk.save_to_files()
-
-model = TrainingLoop(EncoderDecoder()).run(bruk)
+dataset = UberCorpusDataset.from_raw()
+dataset.save_to_files()
+dataset = UberCorpusDataset.from_files()
+print(dataset.target.shape)

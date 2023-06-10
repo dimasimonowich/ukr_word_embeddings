@@ -1,5 +1,5 @@
 cbow:
-  left_window_size: 4
+  left_window_size: 8
   right_window_size: 0
 ed:
   embedding_dim: 128
@@ -11,9 +11,9 @@ tf:
   num_head: 2
   hidden_dim: 256
   num_layers: 2
-  dropout: 0.2
+  dropout: 0.1
 pe:
-  dropout: 0.2
+  dropout: 0.1
   max_len: 1000
 training:
   lr: 0.001
@@ -25,11 +25,13 @@ training:
   validate_on_epoch: 1
 data:
   bruk_path: "data/raw/bruk"
+  uc_path: "data/raw/ubercorpus/news.lemmatized.shuffled.txt"
   stopwords: "data/stopwords/stopwords_ua.txt"
-  tokenizer_path: "data/processed/bruk_w2_v20000/tokenizer.json"
-  context_path: "data/processed/bruk_w2_v20000/context.pt"
-  target_path: "data/processed/bruk_w2_v20000/target.pt"
+  tokenizer_path: "data/processed/uc_025_w8_v40000/tokenizer.json"
+  context_path: "data/processed/uc_025_w8_v40000/context.pt"
+  target_path: "data/processed/uc_025_w8_v40000/target.pt"
   train_size: 1200
   test_size: 105
-  vocab_size: 25000
+  vocab_size: 40000
   unk_token: "~"
+  uc_ratio: 0.0001

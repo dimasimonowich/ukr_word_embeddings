@@ -2,6 +2,7 @@ import math
 import torch
 from torch import nn
 from config import CONFIG
+from model.positional_encoding import PositionalEncoding
 
 
 class CBOWTransformer(nn.Module):
@@ -20,6 +21,7 @@ class CBOWTransformer(nn.Module):
             nn.TransformerEncoderLayer(self.embedding_dim, self.num_head, self.hidden_dim, self.dropout),
             self.num_layers
         )
+        self.pos_encoder = PositionalEncoding()
 
         self.decoder = nn.Linear(self.embedding_dim, self.vocab_size)
         self.softmax = nn.Softmax(dim=1)
@@ -40,6 +42,7 @@ class CBOWTransformer(nn.Module):
 
     def forward(self, src, src_mask):
         src = self.embedding(src) * math.sqrt(self.embedding_dim)
+        src = self.pos_encoder(src)
         output = self.transformer_encoder(src, src_mask)
         output = self.decoder(output)
         return self.softmax(output)
