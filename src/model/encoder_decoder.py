@@ -6,10 +6,10 @@ class EncoderDecoder(Module):
     def __init__(self):
         super().__init__()
         self.vocab_size = CONFIG["data"]["vocab_size"]
-        self.embedding_dim = CONFIG["model"]["embedding_dim"]
-        self.hidden_dim = CONFIG["model"]["hidden_dim"]
-        self.num_layers = CONFIG["model"]["num_layers"]
-        self.fc_dim = CONFIG["model"]["fc_dim"]
+        self.embedding_dim = CONFIG["ed"]["embedding_dim"]
+        self.hidden_dim = CONFIG["ed"]["hidden_dim"]
+        self.num_layers = CONFIG["ed"]["num_layers"]
+        self.fc_dim = CONFIG["ed"]["fc_dim"]
         self.context_length = CONFIG["cbow"]["right_window_size"] + CONFIG["cbow"]["left_window_size"]
 
         self.embedding = Embedding(

@@ -1,17 +1,26 @@
 cbow:
   left_window_size: 4
   right_window_size: 0
-model:
+ed:
   embedding_dim: 128
   hidden_dim: 256
   num_layers: 1
   fc_dim: 1024
+tf:
+  embedding_dim: 256
+  num_head: 2
+  hidden_dim: 256
+  num_layers: 2
+  dropout: 0.2
+pe:
+  dropout: 0.2
+  max_len: 1000
 training:
-  lr: 0.01
+  lr: 0.001
   batch_size: 32
   momentum: 0
   weight_decay: 0
-  num_epochs: 10
+  num_epochs: 2
   saves_folder: "saves"
   validate_on_epoch: 1
 data:

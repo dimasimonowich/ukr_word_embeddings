@@ -1,7 +1,5 @@
 import torch
-from torch import nn
 from config import CONFIG
-from matplotlib import pyplot as plt
 import os
 import numpy as np
 from torch.utils.data import DataLoader, random_split
@@ -22,6 +20,7 @@ class Pipeline:
         )
 
         self.num_epochs = CONFIG["training"]["num_epochs"]
+        self.vocab_size = CONFIG["data"]["vocab_size"]
 
         self.saves_path = os.path.join(CONFIG["training"]["saves_folder"], "model.pt")
 
@@ -51,9 +50,9 @@ class Pipeline:
                 accuracies.append(accuracy)
 
                 print(f'Epoch [{epoch + 1}/{self.num_epochs}]:'
-                      f'Train Loss: {train_loss:.4f}; '
-                      f'Validation Loss: {val_loss:.4f}; '
-                      f'Validation Accuracy: {accuracy:.4f}; ')
+                      f'Train Loss: {train_loss}; '
+                      f'Validation Loss: {val_loss}; '
+                      f'Validation Accuracy: {accuracy}; ')
 
                 if min_val_loss is None:
                     min_val_loss = val_loss
@@ -69,12 +68,14 @@ class Pipeline:
         loop_losses = []
 
         for context_batch, target_batch in tqdm(train_loader):
-            context_batch, target_batch = context_batch.to(self.device), target_batch.to(self.device)
+            context_batch, target_batch = context_batch.to(self.device).transpose(0, 1), target_batch.to(self.device)
 
             self.optimizer.zero_grad()
 
-            output, _, _ = self.model(context_batch)
-            loss = self.criterion(output, target_batch)
+            src_mask = self.model.generate_square_subsequent_mask(len(context_batch)).to(self.device)
+            output = self.model(context_batch, src_mask)[-1]
+
+            loss = self.criterion(output.view(-1, self.vocab_size), target_batch.view(-1))
             loss.backward()
             self.optimizer.step()
 
@@ -91,8 +92,10 @@ class Pipeline:
         for context_batch, target_batch in tqdm(val_loader):
             context_batch, target_batch = context_batch.to(self.device), target_batch.to(self.device)
 
-            output, _, _ = self.model(context_batch)
-            loss = self.criterion(output, target_batch)
+            src_mask = self.model.generate_square_subsequent_mask(len(context_batch)).to(self.device)
+            output = self.model(context_batch, src_mask)[-1]
+
+            loss = self.criterion(output.view(-1, self.vocab_size), target_batch.view(-1))
 
             _, predicted = torch.max(output.data, 1)
             total += target_batch.size(0)
