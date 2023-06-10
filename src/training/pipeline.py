@@ -95,13 +95,16 @@ class Pipeline:
 
             loss = self.criterion(output.view(-1, self.vocab_size), target_batch)
 
-            _, predicted = torch.max(output.data, 1)
-            total += target_batch.size(0)
+            target_batch = target_batch.view(CONFIG["cbow"]["left_window_size"], -1)
+            _, predicted = torch.max(output.data, 2)
+            total += target_batch.shape[1]
             correct += (predicted == target_batch).sum().item()
 
         for i in range(3):
-            context_words = [idx_2_word[context_idx.item()] for context_idx in context_batch[:, i]]
-            print(context_words, idx_2_word[predicted[i].item()], idx_2_word[target_batch[i].item()])
+            predicted_words = [idx_2_word[predicted_idx.item()] for predicted_idx in predicted[:, i]]
+            target_words = [idx_2_word[target_idx.item()] for target_idx in target_batch[:, i]]
+            print(target_words)
+            print(predicted_words)
 
             loop_losses.append(loss.detach().cpu())
 
