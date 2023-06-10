@@ -66,12 +66,15 @@ class Pipeline:
         loop_losses = []
 
         for context_batch, target_batch in tqdm(train_loader):
-            context_batch, target_batch = context_batch.to(self.device).transpose(0, 1), target_batch.to(self.device)
-
+            # context_batch, target_batch = context_batch.to(self.device).transpose(0, 1), target_batch.to(self.device)
+            #
             self.optimizer.zero_grad()
+            #
+            # src_mask = self.model.generate_square_subsequent_mask(len(context_batch)).to(self.device)
+            # output = self.model(context_batch, src_mask)[-1]
 
-            src_mask = self.model.generate_square_subsequent_mask(len(context_batch)).to(self.device)
-            output = self.model(context_batch, src_mask)[-1]
+            context_batch, target_batch = context_batch.to(self.device), target_batch.to(self.device)
+            output = self.model(context_batch)
 
             loss = self.criterion(output, target_batch)
             loss.backward()
@@ -88,10 +91,13 @@ class Pipeline:
         total = 0
 
         for context_batch, target_batch in tqdm(val_loader):
-            context_batch, target_batch = context_batch.to(self.device).transpose(0, 1), target_batch.to(self.device)
+            # context_batch, target_batch = context_batch.to(self.device).transpose(0, 1), target_batch.to(self.device)
+            #
+            # src_mask = self.model.generate_square_subsequent_mask(len(context_batch)).to(self.device)
+            # output = self.model(context_batch, src_mask)[-1]
 
-            src_mask = self.model.generate_square_subsequent_mask(len(context_batch)).to(self.device)
-            output = self.model(context_batch, src_mask)[-1]
+            context_batch, target_batch = context_batch.to(self.device), target_batch.to(self.device)
+            output = self.model(context_batch)
 
             loss = self.criterion(output, target_batch)
 

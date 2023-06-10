@@ -1,4 +1,4 @@
-from torch.nn import Embedding, Linear, LSTM, Module, ReLU
+from torch.nn import Embedding, Linear, LSTM, Module, ReLU, Softmax
 from config import CONFIG
 
 
@@ -24,10 +24,8 @@ class EncoderDecoder(Module):
             self.embedding_dim, self.hidden_dim, batch_first=True, num_layers=self.num_layers
         )
 
-        self.fc1 = Linear(self.hidden_dim, self.fc_dim)
-        self.fc2 = Linear(self.fc_dim, self.vocab_size)
-
-        self.relu = ReLU()
+        self.decoder = Linear(self.hidden_dim, self.vocab_size)
+        self.softmax = Softmax(dim=1)
 
     def forward(self, x, h=None, c=None):
         x = self.embedding(x)
@@ -38,7 +36,6 @@ class EncoderDecoder(Module):
             _, (h, c) = self.lstm(x)  # (n_layers, n_samples, hidden_dim)
         h_mean = h.mean(dim=0)  # (n_samples, hidden_dim)
 
-        x = self.relu(self.fc1(h_mean))
-        x = self.fc2(x)
+        x = self.softmax(self.decoder(h_mean))
 
-        return x, h, c
+        return x
