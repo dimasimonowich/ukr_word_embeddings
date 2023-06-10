@@ -96,16 +96,15 @@ class Pipeline:
         total = 0
 
         for context_batch, target_batch in tqdm(val_loader):
-            context_batch, target_batch = context_batch.to(self.device).transpose(0, 1), target_batch.to(self.device).view(-1)
+            context_batch, target_batch = context_batch.to(self.device), target_batch.to(self.device)
 
             src_mask = self.model.generate_square_subsequent_mask(len(context_batch)).to(self.device)
             output = self.model(context_batch, src_mask)
 
-            loss = self.criterion(output.view(-1, self.vocab_size), target_batch)
+            loss = self.criterion(output.view(-1, self.vocab_size), target_batch.view(-1))
 
-            target_batch = target_batch.view(CONFIG["cbow"]["left_window_size"], -1)
             _, predicted = torch.max(output.data, 2)
-            total += target_batch.shape[1]
+            total += target_batch.shape[0] * target_batch.shape[1]
             correct += (predicted == target_batch).sum().item()
 
         for i in range(3):
