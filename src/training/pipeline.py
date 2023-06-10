@@ -68,12 +68,14 @@ class Pipeline:
         for context_batch, target_batch in tqdm(train_loader):
             context_batch, target_batch = context_batch.to(self.device).transpose(0, 1), target_batch.to(self.device)
 
+            target_batch = torch.concat([context_batch[1:], torch.unsqueeze(target_batch, 0)])
+
             self.optimizer.zero_grad()
 
             src_mask = self.model.generate_square_subsequent_mask(len(context_batch)).to(self.device)
-            output = self.model(context_batch, src_mask)[-1]
+            output = self.model(context_batch, src_mask)
 
-            loss = self.criterion(output, target_batch)
+            loss = self.criterion(output.view(-1, self.vocab_size), target_batch.view(-1))
             loss.backward()
             self.optimizer.step()
 
