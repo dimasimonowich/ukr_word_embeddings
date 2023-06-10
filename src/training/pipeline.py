@@ -39,7 +39,7 @@ class Pipeline:
         min_val_loss = None
 
         for epoch in range(self.num_epochs):
-            train_loss = self._training_loop(train_loader)
+            train_loss = self._training_loop(train_loader, dataset.idx_2_word)
             train_losses.append(train_loss)
 
             if (epoch + 1) % validate_on_epoch == 0:
@@ -61,19 +61,27 @@ class Pipeline:
 
         return self.model, train_losses, val_losses, accuracies
 
-    def _training_loop(self, train_loader):
+    def _training_loop(self, train_loader, idx_2_word):
         self.model.train()
         loop_losses = []
 
         for context_batch, target_batch in tqdm(train_loader):
-            context_batch, target_batch = context_batch.to(self.device).transpose(0, 1), target_batch.to(self.device).view(-1)
+            context_batch, target_batch = context_batch.to(self.device), target_batch.to(self.device)
+            # print(context_batch.shape)
+            # print(target_batch.shape)
+            #
+            # for i in range(3):
+            #     context_words = [idx_2_word[context_idx.item()] for context_idx in context_batch[:, i]]
+            #     target_words = [idx_2_word[target_idx.item()] for target_idx in target_batch[:, i]]
+            #     print(target_words)
+            #     print(context_words)
 
             self.optimizer.zero_grad()
 
             src_mask = self.model.generate_square_subsequent_mask(len(context_batch)).to(self.device)
             output = self.model(context_batch, src_mask)
 
-            loss = self.criterion(output.view(-1, self.vocab_size), target_batch)
+            loss = self.criterion(output.view(-1, self.vocab_size), target_batch.view(-1))
             loss.backward()
             self.optimizer.step()
 
