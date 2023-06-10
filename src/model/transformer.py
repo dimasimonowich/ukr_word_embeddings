@@ -1,7 +1,6 @@
 import math
 import torch
 from torch import nn
-from model.positional_encoding import PositionalEncoding
 from config import CONFIG
 
 
@@ -17,7 +16,6 @@ class CBOWTransformer(nn.Module):
         self.num_layers = CONFIG["tf"]["num_layers"]
 
         self.embedding = nn.Embedding(self.vocab_size, self.embedding_dim)
-        self.pos_encoder = PositionalEncoding()
         self.transformer_encoder = nn.TransformerEncoder(
             nn.TransformerEncoderLayer(self.embedding_dim, self.num_head, self.hidden_dim, self.dropout),
             self.num_layers
@@ -51,6 +49,5 @@ class CBOWTransformer(nn.Module):
 class CBOWTransformerEncoder(CBOWTransformer):
     def forward(self, src, src_mask):
         src = self.embedding(src) * math.sqrt(self.embedding_dim)
-        src = self.pos_encoder(src)
         output = self.transformer_encoder(src, src_mask)
         return output
