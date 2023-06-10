@@ -26,9 +26,9 @@ training:
 data:
   bruk_path: "data/raw/bruk"
   stopwords: "data/stopwords/stopwords_ua.txt"
-  tokenizer_path: "data/processed/bruk_w4_v20000/tokenizer.json"
-  context_path: "data/processed/bruk_w4_v20000/context.pt"
-  target_path: "data/processed/bruk_w4_v20000/target.pt"
+  tokenizer_path: "data/processed/bruk_full_w4_v25000/tokenizer.json"
+  context_path: "data/processed/bruk_full_w4_v25000/context.pt"
+  target_path: "data/processed/bruk_full_w4_v25000/target.pt"
   train_size: 1200
   test_size: 105
   vocab_size: 25000

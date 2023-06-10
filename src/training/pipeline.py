@@ -12,11 +12,9 @@ class Pipeline:
 
         self.model = model.to(self.device)
         self.criterion = torch.nn.CrossEntropyLoss()
-        self.optimizer = torch.optim.SGD(
+        self.optimizer = torch.optim.Adam(
             model.parameters(),
             lr=CONFIG["training"]["lr"],
-            momentum=CONFIG["training"]["momentum"],
-            weight_decay=CONFIG["training"]["weight_decay"]
         )
 
         self.num_epochs = CONFIG["training"]["num_epochs"]
@@ -50,9 +48,9 @@ class Pipeline:
                 accuracies.append(accuracy)
 
                 print(f'Epoch [{epoch + 1}/{self.num_epochs}]:'
-                      f'Train Loss: {train_loss}; '
-                      f'Validation Loss: {val_loss}; '
-                      f'Validation Accuracy: {accuracy}; ')
+                      f'Train Loss: {train_loss:.5f}; '
+                      f'Validation Loss: {val_loss:.5f}; '
+                      f'Validation Accuracy: {accuracy * 100:.2f}; ')
 
                 if min_val_loss is None:
                     min_val_loss = val_loss
@@ -75,7 +73,7 @@ class Pipeline:
             src_mask = self.model.generate_square_subsequent_mask(len(context_batch)).to(self.device)
             output = self.model(context_batch, src_mask)[-1]
 
-            loss = self.criterion(output.view(-1, self.vocab_size), target_batch.view(-1))
+            loss = self.criterion(output, target_batch)
             loss.backward()
             self.optimizer.step()
 
@@ -90,12 +88,12 @@ class Pipeline:
         total = 0
 
         for context_batch, target_batch in tqdm(val_loader):
-            context_batch, target_batch = context_batch.to(self.device), target_batch.to(self.device)
+            context_batch, target_batch = context_batch.to(self.device).transpose(0, 1), target_batch.to(self.device)
 
             src_mask = self.model.generate_square_subsequent_mask(len(context_batch)).to(self.device)
             output = self.model(context_batch, src_mask)[-1]
 
-            loss = self.criterion(output.view(-1, self.vocab_size), target_batch.view(-1))
+            loss = self.criterion(output, target_batch)
 
             _, predicted = torch.max(output.data, 1)
             total += target_batch.size(0)

@@ -64,6 +64,10 @@ class BrukDataset(Dataset):
             target = target[target_not_unk_mask]
             context = context[target_not_unk_mask]
 
+            context_not_unk_mask = torch.sum(context != len(word_2_idx) - 1, dim=1) == context.shape[1]
+            target = target[context_not_unk_mask]
+            context = context[context_not_unk_mask]
+
         return cls(context, target, word_2_idx)
 
     def save_to_files(
