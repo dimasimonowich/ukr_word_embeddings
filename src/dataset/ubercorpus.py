@@ -142,7 +142,7 @@ class UberCorpusDataset(Dataset):
         target = []
 
         for sentence in sentences:
-            encoded_sentence = np.array([word_2_idx.get(word, CONFIG["data"]["unk_token"]) for word in sentence])
+            encoded_sentence = np.array([word_2_idx.get(word, CONFIG["data"]["vocab_size"] - 1) for word in sentence])
 
             for i in range(len(encoded_sentence) - 1 - CONFIG["cbow"]["left_window_size"]):
                 sentence_context = encoded_sentence[i:i + CONFIG["cbow"]["left_window_size"]]
