@@ -43,14 +43,14 @@ class Pipeline:
             train_losses.append(train_loss)
 
             if (epoch + 1) % validate_on_epoch == 0:
-                val_loss, accuracy = self._validation_loop(val_loader)
+                val_loss, accuracy = self._validation_loop(val_loader, dataset.idx_2_word)
                 val_losses.append(val_loss)
                 accuracies.append(accuracy)
 
                 print(f'Epoch [{epoch + 1}/{self.num_epochs}]:'
                       f'Train Loss: {train_loss:.5f}; '
                       f'Validation Loss: {val_loss:.5f}; '
-                      f'Validation Accuracy: {accuracy * 100:.2f}; ')
+                      f'Validation Accuracy: {accuracy * 100:.2f}%; ')
 
                 if min_val_loss is None:
                     min_val_loss = val_loss
@@ -81,7 +81,7 @@ class Pipeline:
 
         return np.mean(loop_losses)/len(train_loader)
 
-    def _validation_loop(self, val_loader):
+    def _validation_loop(self, val_loader, idx_2_word):
         self.model.eval()
         loop_losses = []
         correct = 0
@@ -98,6 +98,10 @@ class Pipeline:
             _, predicted = torch.max(output.data, 1)
             total += target_batch.size(0)
             correct += (predicted == target_batch).sum().item()
+
+        for i in range(3):
+            context_words = [idx_2_word[context_idx.item()] for context_idx in context_batch[:, i]]
+            print(context_words, idx_2_word[predicted[i].item()], idx_2_word[target_batch[i].item()])
 
             loop_losses.append(loss.detach().cpu())
 

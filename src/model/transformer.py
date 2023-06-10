@@ -42,7 +42,7 @@ class CBOWTransformer(nn.Module):
 
     def forward(self, src, src_mask):
         src = self.embedding(src) * math.sqrt(self.embedding_dim)
-        src = self.pos_encoder(src)
+        # src = self.pos_encoder(src)
         output = self.transformer_encoder(src, src_mask)
         output = self.decoder(output)
         return self.softmax(output)
