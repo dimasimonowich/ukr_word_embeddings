@@ -13,7 +13,7 @@ training:
   num_epochs: 10
   saves_folder: "/content/gdrive/MyDrive/UnikEbaniy/ukr_word_embeddings/data_and_saves"
   validate_on_epoch: 1
-  train_ratio: 0.95
+  train_ratio: 0.99
 data:
   uc_path: "data/raw/ubercorpus/news.lemmatized.shuffled.txt"
   stopwords: "data/stopwords/stopwords_ua.txt"

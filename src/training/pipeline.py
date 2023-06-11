@@ -20,7 +20,7 @@ class Pipeline:
         self.num_epochs = CONFIG["training"]["num_epochs"]
         self.vocab_size = CONFIG["data"]["vocab_size"]
 
-        self.saves_path = os.path.join(CONFIG["training"]["saves_folder"], "model.pt")
+        self.saves_path = os.path.join(CONFIG["training"]["saves_folder"], "model_uc_full.pt")
 
     def train(self, dataset):
         batch_size = CONFIG["training"]["batch_size"]
