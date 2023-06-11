@@ -39,8 +39,7 @@ class Pipeline:
         min_val_loss = None
 
         for epoch in range(self.num_epochs):
-            val_loss, accuracy = self._validation_loop(val_loader, dataset.idx_2_word)
-            train_loss = self._training_loop(train_loader, dataset.idx_2_word)
+            train_loss = self._training_loop(train_loader)
             train_losses.append(train_loss)
 
             if (epoch + 1) % validate_on_epoch == 0:
@@ -105,7 +104,7 @@ class Pipeline:
 
         p = predicted.tolist()
         tb = target_batch.tolist()
-        print(np.array([[idx_2_word[item] for item in row] for row in p[:2]], dtype=object))
-        print(np.array([[idx_2_word[item] for item in row] for row in tb[:2]], dtype=object))
+        print(np.array([[idx_2_word[item] for item in row] for row in p[:3]], dtype=object))
+        print(np.array([[idx_2_word[item] for item in row] for row in tb[:3]], dtype=object))
 
         return np.mean(loop_losses)/len(val_loader), correct/total
