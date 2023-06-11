@@ -44,6 +44,18 @@ class TransformerED(nn.Module):
 
         return out
 
+    def encode(self, src):
+        src = self.embedding(src) * math.sqrt(self.embedding_dim)
+        src = self.positional_encoder(src)
+        src = src.permute(1, 0, 2)
+
+        src = self.transformer.encoder(src, None)
+
+        return src
+
+    def embed(self, src):
+        return self.embedding(src)
+
     @staticmethod
     def get_tgt_mask(size):
         mask = torch.tril(torch.ones(size, size) == 1)
