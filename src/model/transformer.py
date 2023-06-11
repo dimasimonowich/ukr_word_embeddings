@@ -24,7 +24,7 @@ class CBOWTransformer(nn.Module):
         self.pos_encoder = PositionalEncoding()
 
         self.decoder = nn.Linear(self.embedding_dim, self.vocab_size)
-        self.softmax = nn.Softmax(dim=1)
+        self.softmax = nn.Softmax(dim=-1)
 
         self.init_weights()
 
@@ -45,7 +45,7 @@ class CBOWTransformer(nn.Module):
         src = self.pos_encoder(src)
         output = self.transformer_encoder(src, src_mask)
         output = self.decoder(output)
-        return output
+        return self.softmax(output)
 
 
 class CBOWTransformerEncoder(CBOWTransformer):
