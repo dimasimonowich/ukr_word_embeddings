@@ -27,18 +27,19 @@ class UberCorpusDataset(Dataset):
         self.vocabulary = list(word_2_idx.keys())
 
     @classmethod
-    def from_raw(cls):
+    def from_raw(cls, word_2_idx=None):
         sentences = cls._process_sentences(cls._load_sentences())
 
-        word_2_idx = {}
-        most_common_words = {
-            x[0]: i
-            for i, x in enumerate(
-                Counter([word for sentence in sentences for word in sentence]).most_common()[:cls.vocab_size - 1]
-            )
-        }
-        word_2_idx.update(most_common_words)
-        word_2_idx[CONFIG["data"]["unk_token"]] = cls.vocab_size - 1
+        if word_2_idx is None:
+            word_2_idx = {}
+            most_common_words = {
+                x[0]: i
+                for i, x in enumerate(
+                    Counter([word for sentence in sentences for word in sentence]).most_common()[:cls.vocab_size - 1]
+                )
+            }
+            word_2_idx.update(most_common_words)
+            word_2_idx[CONFIG["data"]["unk_token"]] = cls.vocab_size - 1
 
         context, target = cls._create_pairs(sentences, word_2_idx)
 
