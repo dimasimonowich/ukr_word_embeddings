@@ -12,7 +12,7 @@ class Pipeline:
 
         self.model = model.to(self.device)
         self.criterion = torch.nn.CrossEntropyLoss()
-        self.optimizer = torch.optim.Adam(
+        self.optimizer = torch.optim.SGD(
             model.parameters(),
             lr=CONFIG["training"]["lr"],
         )
