@@ -25,8 +25,8 @@ class Pipeline:
     def train(self, dataset):
         batch_size = CONFIG["training"]["batch_size"]
         validate_on_epoch = CONFIG["training"]["validate_on_epoch"]
+        train_ratio = CONFIG["training"]["train_ratio"]
 
-        train_ratio = CONFIG["data"]["train_size"] / (CONFIG["data"]["test_size"] + CONFIG["data"]["train_size"])
         train_size = int(train_ratio * len(dataset))
         val_size = len(dataset) - train_size
         train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
@@ -66,21 +66,25 @@ class Pipeline:
         loop_losses = []
 
         for context_batch, target_batch in tqdm(train_loader):
-            context_batch = context_batch.to(self.device).transpose(0, 1)
-            target_batch = target_batch.to(self.device).transpose(0, 1).contiguous()
+            context_batch, target_batch = context_batch.to(self.device), target_batch.to(self.device)
+            target_input_batch = target_batch[:, :-1]
+            target_expected_batch = target_batch[:, 1:]
+
+            sequence_length = target_input_batch.size(1)
+            target_mask = self.model.get_tgt_mask(sequence_length).to(self.device)
+
+            output = self.model(context_batch, target_input_batch, target_mask)
+
+            output = output.permute(1, 2, 0)
+            loss = self.criterion(output, target_expected_batch)
 
             self.optimizer.zero_grad()
-
-            src_mask = self.model.generate_square_subsequent_mask(len(context_batch)).to(self.device)
-            output = self.model(context_batch, src_mask)
-
-            loss = self.criterion(output.view(-1, self.vocab_size), target_batch.view(-1))
             loss.backward()
             self.optimizer.step()
 
             loop_losses.append(loss.detach().cpu())
 
-        return np.mean(loop_losses)/len(train_loader)
+        return np.mean(loop_losses)
 
     def _validation_loop(self, val_loader, idx_2_word):
         self.model.eval()
@@ -89,22 +93,26 @@ class Pipeline:
         total = 0
 
         for context_batch, target_batch in tqdm(val_loader):
-            context_batch = context_batch.to(self.device).transpose(0, 1)
-            target_batch = target_batch.to(self.device).transpose(0, 1).contiguous()
+            context_batch, target_batch = context_batch.to(self.device), target_batch.to(self.device)
+            target_input_batch = target_batch[:, :-1]
+            target_expected_batch = target_batch[:, 1:]
 
-            src_mask = self.model.generate_square_subsequent_mask(len(context_batch)).to(self.device)
-            output = self.model(context_batch, src_mask)
+            sequence_length = target_input_batch.size(1)
+            target_mask = self.model.get_tgt_mask(sequence_length).to(self.device)
 
-            loss = self.criterion(output.view(-1, self.vocab_size), target_batch.view(-1))
+            output = self.model(context_batch, target_input_batch, target_mask)
 
-            _, predicted = torch.max(output.data, 2)
-            total += target_batch.shape[0] * target_batch.shape[1]
-            correct += (predicted == target_batch).sum().sum().item()
+            output = output.permute(1, 2, 0)
+            loss = self.criterion(output, target_expected_batch)
             loop_losses.append(loss.detach().cpu())
 
-        p = predicted.tolist()
-        tb = target_batch.tolist()
-        print(np.array([[idx_2_word[item] for item in row] for row in p[:3]], dtype=object))
-        print(np.array([[idx_2_word[item] for item in row] for row in tb[:3]], dtype=object))
+            _, predicted = torch.max(output.data, 1)
+            total += target_expected_batch.shape[0] * target_expected_batch.shape[1]
+            correct += (predicted == target_expected_batch).sum().sum().item()
 
-        return np.mean(loop_losses)/len(val_loader), correct/total
+        p = predicted.tolist()
+        tb = target_expected_batch.tolist()
+        print(np.array([[idx_2_word[item] for item in row] for row in p[:2]], dtype=object))
+        print(np.array([[idx_2_word[item] for item in row] for row in tb[:2]], dtype=object))
+
+        return np.mean(loop_losses), correct/total

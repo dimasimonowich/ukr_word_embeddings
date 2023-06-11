@@ -11,7 +11,7 @@ import numpy as np
 
 class UberCorpusDataset(Dataset):
     vocab_size = CONFIG["data"]["vocab_size"]
-    left_window_size = CONFIG["cbow"]["left_window_size"]
+    left_window_size = CONFIG["data"]["window_size"]
 
     def __init__(
         self,
@@ -131,7 +131,7 @@ class UberCorpusDataset(Dataset):
                 split_sentence = sentence.split()
                 split_sentence = [word for word in split_sentence if word not in stop_words and len(word) > 3]
 
-                if len(split_sentence) > CONFIG["cbow"]["left_window_size"] + 1:
+                if len(split_sentence) > CONFIG["data"]["window_size"] + 1:
                     processed_sentences.append(split_sentence)
 
         return processed_sentences
@@ -144,9 +144,9 @@ class UberCorpusDataset(Dataset):
         for sentence in sentences:
             encoded_sentence = np.array([word_2_idx.get(word, CONFIG["data"]["vocab_size"] - 1) for word in sentence])
 
-            for i in range(len(encoded_sentence) - 1 - CONFIG["cbow"]["left_window_size"]):
-                sentence_context = encoded_sentence[i:i + CONFIG["cbow"]["left_window_size"]]
-                sentence_target = encoded_sentence[i + 1:i + 1 + CONFIG["cbow"]["left_window_size"]]
+            for i in range(len(encoded_sentence) - 1 - CONFIG["data"]["window_size"]):
+                sentence_context = encoded_sentence[i:i + CONFIG["data"]["window_size"]]
+                sentence_target = encoded_sentence[i + 1:i + 1 + CONFIG["data"]["window_size"]]
 
                 context.append(sentence_context)
                 target.append(sentence_target)
