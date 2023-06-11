@@ -45,7 +45,7 @@ class CBOWTransformer(nn.Module):
         src = self.pos_encoder(src)
         output = self.transformer_encoder(src, src_mask)
         output = self.decoder(output)
-        return self.softmax(output)
+        return output
 
 
 class CBOWTransformerEncoder(CBOWTransformer):
