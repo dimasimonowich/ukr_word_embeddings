@@ -11,7 +11,7 @@ training:
   lr: 0.01
   batch_size: 64
   num_epochs: 10
-  saves_folder: "saves"
+  saves_folder: "/content/gdrive/MyDrive/UnikEbaniy/ukr_word_embeddings/data_and_saves"
   validate_on_epoch: 1
   train_ratio: 0.95
 data:
