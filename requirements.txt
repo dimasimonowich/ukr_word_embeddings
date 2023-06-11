@@ -3,6 +3,3 @@ numpy
 ruamel.yaml
 torch
 matplotlib
-pandas
-stanza
-gdown
