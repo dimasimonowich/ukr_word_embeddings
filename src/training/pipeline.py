@@ -39,6 +39,7 @@ class Pipeline:
         min_val_loss = None
 
         for epoch in range(self.num_epochs):
+            val_loss, accuracy = self._validation_loop(val_loader, dataset.idx_2_word)
             train_loss = self._training_loop(train_loader, dataset.idx_2_word)
             train_losses.append(train_loss)
 
@@ -61,20 +62,13 @@ class Pipeline:
 
         return self.model, train_losses, val_losses, accuracies
 
-    def _training_loop(self, train_loader, idx_2_word):
+    def _training_loop(self, train_loader):
         self.model.train()
         loop_losses = []
 
         for context_batch, target_batch in tqdm(train_loader):
-            context_batch, target_batch = context_batch.to(self.device), target_batch.to(self.device)
-            # print(context_batch.shape)
-            # print(target_batch.shape)
-            #
-            # for i in range(3):
-            #     context_words = [idx_2_word[context_idx.item()] for context_idx in context_batch[:, i]]
-            #     target_words = [idx_2_word[target_idx.item()] for target_idx in target_batch[:, i]]
-            #     print(target_words)
-            #     print(context_words)
+            context_batch = context_batch.to(self.device).transpose(0, 1)
+            target_batch = target_batch.to(self.device).transpose(0, 1).contiguous()
 
             self.optimizer.zero_grad()
 
@@ -96,7 +90,8 @@ class Pipeline:
         total = 0
 
         for context_batch, target_batch in tqdm(val_loader):
-            context_batch, target_batch = context_batch.to(self.device), target_batch.to(self.device)
+            context_batch = context_batch.to(self.device).transpose(0, 1)
+            target_batch = target_batch.to(self.device).transpose(0, 1).contiguous()
 
             src_mask = self.model.generate_square_subsequent_mask(len(context_batch)).to(self.device)
             output = self.model(context_batch, src_mask)
@@ -105,14 +100,12 @@ class Pipeline:
 
             _, predicted = torch.max(output.data, 2)
             total += target_batch.shape[0] * target_batch.shape[1]
-            correct += (predicted == target_batch).sum().item()
-
-        for i in range(3):
-            predicted_words = [idx_2_word[predicted_idx.item()] for predicted_idx in predicted[:, i]]
-            target_words = [idx_2_word[target_idx.item()] for target_idx in target_batch[:, i]]
-            print(target_words)
-            print(predicted_words)
-
+            correct += (predicted == target_batch).sum().sum().item()
             loop_losses.append(loss.detach().cpu())
+
+        p = predicted.tolist()
+        tb = target_batch.tolist()
+        print(np.array([[idx_2_word[item] for item in row] for row in p[:2]], dtype=object))
+        print(np.array([[idx_2_word[item] for item in row] for row in tb[:2]], dtype=object))
 
         return np.mean(loop_losses)/len(val_loader), correct/total
