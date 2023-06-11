@@ -57,17 +57,21 @@ class UberCorpusDataset(Dataset):
         with open(tokenizer_path) as f:
             word_2_idx = json.load(f)
 
-        context = torch.LongTensor(torch.load(context_path))
-        target = torch.LongTensor(torch.load(target_path))
+        context = None
+        target = None
 
-        if filter_unk_target:
-            target_not_unk_mask = torch.sum(target != len(word_2_idx) - 1, dim=1) == target.shape[1]
-            target = target[target_not_unk_mask]
-            context = context[target_not_unk_mask]
+        if not tokenizer_only:
+            context = torch.LongTensor(torch.load(context_path))
+            target = torch.LongTensor(torch.load(target_path))
 
-            context_not_unk_mask = torch.sum(context != len(word_2_idx) - 1, dim=1) == context.shape[1]
-            target = target[context_not_unk_mask]
-            context = context[context_not_unk_mask]
+            if filter_unk_target:
+                target_not_unk_mask = torch.sum(target != len(word_2_idx) - 1, dim=1) == target.shape[1]
+                target = target[target_not_unk_mask]
+                context = context[target_not_unk_mask]
+
+                context_not_unk_mask = torch.sum(context != len(word_2_idx) - 1, dim=1) == context.shape[1]
+                target = target[context_not_unk_mask]
+                context = context[context_not_unk_mask]
 
         return cls(context, target, word_2_idx)
 
