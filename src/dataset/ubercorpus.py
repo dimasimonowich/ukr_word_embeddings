@@ -51,7 +51,8 @@ class UberCorpusDataset(Dataset):
         tokenizer_path=CONFIG["data"]["tokenizer_path"],
         context_path=CONFIG["data"]["context_path"],
         target_path=CONFIG["data"]["target_path"],
-        filter_unk_target=True
+        filter_unk_target=True,
+        tokenizer_only=False
     ):
         with open(tokenizer_path) as f:
             word_2_idx = json.load(f)
