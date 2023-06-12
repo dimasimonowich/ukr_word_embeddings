@@ -3,3 +3,5 @@ numpy
 ruamel.yaml
 torch
 matplotlib
+torchmetrics
+gensim
