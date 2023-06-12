@@ -1,16 +1,16 @@
 tf:
   embedding_dim: 128
-  num_head: 2
-  num_encoder_layers: 3
-  num_decoder_layers: 3
+  num_head: 8
+  num_encoder_layers: 8
+  num_decoder_layers: 4
   dropout_prob: 0.1
 pe:
   dropout_prob: 0.1
   max_len: 1000
 training:
-  lr: 0.01
-  batch_size: 64
-  num_epochs: 10
+  lr: 1
+  batch_size: 128
+  num_epochs: 100
   saves_folder: "/content/gdrive/MyDrive/UnikEbaniy/ukr_word_embeddings/data_and_saves"
   validate_on_epoch: 1
   train_ratio: 0.99
