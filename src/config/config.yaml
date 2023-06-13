@@ -9,9 +9,9 @@ pe:
   max_len: 1000
 training:
   lr: 1
-  batch_size: 128
+  batch_size: 256
   num_epochs: 100
-  saves_folder: "/content/gdrive/MyDrive/UnikEbaniy/ukr_word_embeddings/data_and_saves"
+  saves_folder: "saves/model_uc_full.pt"
   validate_on_epoch: 1
   train_ratio: 0.99
 data:
